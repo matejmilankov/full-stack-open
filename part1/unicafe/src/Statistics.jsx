@@ -8,32 +8,35 @@ export function Statistics(props) {
     return (
         <>
             {total !== 0 ? (
-                <>
-                    <StatisticLine 
-                        text="good"
-                        value={props.good}
-                    />
-                    <StatisticLine 
-                        text="neutral"
-                        value={props.neutral}
-                    />
-                    <StatisticLine 
-                        text="bad"
-                        value={props.bad}
-                    />
-                    <StatisticLine 
-                        text="all"
-                        value={total}
-                    />
-                    <StatisticLine 
-                        text="average"
-                        value={avg}
-                    />
-                    <StatisticLine 
-                        text="positive"
-                        value={positive}
-                    />
-                </>
+                <table>
+                    <tbody>
+
+                        <StatisticLine
+                            text="good"
+                            value={props.good}
+                        />
+                        <StatisticLine
+                            text="neutral"
+                            value={props.neutral}
+                        />
+                        <StatisticLine
+                            text="bad"
+                            value={props.bad}
+                        />
+                        <StatisticLine
+                            text="all"
+                            value={total}
+                        />
+                        <StatisticLine
+                            text="average"
+                            value={avg}
+                        />
+                        <StatisticLine
+                            text="positive"
+                            value={positive}
+                        />
+                    </tbody>
+                </table>
             ) : (
                 <p>No feedback is given</p>
             )}
