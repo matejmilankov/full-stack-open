@@ -1,5 +1,7 @@
-export function Total(props) {
+export function Total({ parts }) {
+    let total = 0;
+    parts.forEach(part => total += part.exercises)
     return (
-        <p>Number of exercises {props.exercises1 + props.exercises2 + props.exercises3}</p>
+        <p>Number of exercises {total}</p>
     )
 }
