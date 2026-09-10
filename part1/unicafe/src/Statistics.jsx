@@ -5,12 +5,18 @@ export function Statistics(props) {
 
     return (
         <>
-            <p>good {props.good}</p>
-            <p>neutral {props.neutral}</p>
-            <p>bad {props.bad}</p>
-            <p>all {total}</p>
-            <p>average {avg}</p>
-            <p>positive {positive}</p>
+            {total !== 0 ? (
+                <>
+                    <p>good {props.good}</p>
+                    <p>neutral {props.neutral}</p>
+                    <p>bad {props.bad}</p>
+                    <p>all {total}</p>
+                    <p>average {avg}</p>
+                    <p>positive {positive}</p>
+                </>
+            ) : (
+                <p>No feedback is given</p>
+            )}
         </>
     )
 }
