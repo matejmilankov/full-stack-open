@@ -14,7 +14,6 @@ const App = () => {
    
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(Array(anecdotes.length).fill(0));
-  console.log(votes);
 
   const handleNext = () => {
     setSelected(Math.floor(Math.random() * anecdotes.length));
@@ -24,12 +23,12 @@ const App = () => {
     setVotes(prev => prev.map((vote,index) => index !== selected ? vote : vote + 1));
   }
 
-
+  const bestAnecdote = votes.indexOf(Math.max(...votes));
 
   return (
     <div>
       <div>
-
+        <h1>Anecdotes of the day</h1>
         {anecdotes[selected]}
       </div>
       <div>
@@ -41,7 +40,10 @@ const App = () => {
       <button onClick={handleVote}>
         vote
       </button>
-
+      <div>
+        <h1>Anecdotes with most votes</h1>
+        {anecdotes[bestAnecdote]}
+      </div>
     </div>
   )
 }
