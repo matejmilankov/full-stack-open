@@ -1,3 +1,5 @@
+import { StatisticLine } from "./StatisticLine";
+
 export function Statistics(props) {
     const total = props.good + props.neutral + props.bad;
     const avg = total === 0 ? 0 : (props.good * 1 + props.neutral * 0 + props.bad * (-1)) / total;
@@ -7,12 +9,30 @@ export function Statistics(props) {
         <>
             {total !== 0 ? (
                 <>
-                    <p>good {props.good}</p>
-                    <p>neutral {props.neutral}</p>
-                    <p>bad {props.bad}</p>
-                    <p>all {total}</p>
-                    <p>average {avg}</p>
-                    <p>positive {positive}</p>
+                    <StatisticLine 
+                        text="good"
+                        value={props.good}
+                    />
+                    <StatisticLine 
+                        text="neutral"
+                        value={props.neutral}
+                    />
+                    <StatisticLine 
+                        text="bad"
+                        value={props.bad}
+                    />
+                    <StatisticLine 
+                        text="all"
+                        value={total}
+                    />
+                    <StatisticLine 
+                        text="average"
+                        value={avg}
+                    />
+                    <StatisticLine 
+                        text="positive"
+                        value={positive}
+                    />
                 </>
             ) : (
                 <p>No feedback is given</p>
