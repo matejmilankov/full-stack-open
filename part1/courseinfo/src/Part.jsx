@@ -1,7 +1,7 @@
-export function Part({ part, exercises }) {
+export function Part({ part }) {
     return (
         <p>
-            {part} {exercises}
+            {part.name} {part.exercises}
         </p>
     )
 }
