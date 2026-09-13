@@ -24,6 +24,11 @@
       "name": "Matej Milankov",
       "number": "21873912",
       "id": "8L6s1Av4ns4"
+    },
+    {
+      "name": "Test Osoba",
+      "number": "1237198",
+      "id": "qK007WwOPbs"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
