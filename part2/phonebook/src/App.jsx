@@ -27,9 +27,14 @@ const App = () => {
     event.preventDefault();
     if (persons.some(person => person.name === newName))
       return alert(`${newName} is already added to phonebook`);
-    setPersons(prev => [...prev, { name: newName, number: newNumber }]);
-    setNewName('');
-    setNewNumber('');
+
+    axios.post('http://localhost:3001/persons', { name: newName, number: newNumber })
+      .then(response => {
+        setPersons(prev => [...prev, response.data]);
+        setNewName('');
+        setNewNumber('');
+      })
+      .catch(error => console.log("fail", error));
   }
 
   const handlePhoneChange = (event) => {
