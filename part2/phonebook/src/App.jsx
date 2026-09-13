@@ -28,7 +28,7 @@ const App = () => {
       return alert(`${newName} is already added to phonebook`);
 
     personService
-      .create({name: newName, number: newNumber})
+      .create({ name: newName, number: newNumber })
       .then(newPerson => {
         setPersons(prev => [...prev, newPerson]);
         setNewName('');
@@ -43,6 +43,17 @@ const App = () => {
 
   const handleSearch = (event) => {
     setFilter(event.target.value);
+  }
+
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Delete ${name} ?`)) {
+      personService
+        .remove(id)
+        .then(() => {
+          setPersons(prevPersons => prevPersons.filter(p => p.id !== id));
+        })
+        .catch(error => console.log("fail", error));
+    }
   }
 
   const personsToShow = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()));
@@ -65,7 +76,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} handleDelete={handleDelete} />
     </div>
   )
 }

@@ -1,10 +1,13 @@
-export function Persons({ personsToShow }) {
+export function Persons({ personsToShow, handleDelete }) {
     return (
         <>
             {personsToShow.map(person => (
-                <p key={person.name}>
-                    {person.name} {person.number}
-                </p>
+                <div key={person.id}>
+                    <span>
+                        {person.name} {person.number}
+                    </span>
+                    <button onClick={() => handleDelete(person.id, person.name)}>Delete</button>
+                </div>
             ))}
         </>
     )
