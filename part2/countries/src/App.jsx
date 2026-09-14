@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-
+import { Country } from './Country';
 
 function App() {
   const [query, setQuery] = useState('');
   const [countries, setCountries] = useState([]);
+  const [country, setCountry] = useState(null);
 
   useEffect(() => {
     const fetchSearch = async () => {
@@ -27,6 +28,11 @@ function App() {
   const renderResults = () => {
     const filteredCountries = countries.filter(c => c.name.common.toLowerCase().includes(query.toLowerCase()));
 
+    if(country !== null) {
+      const c = countries.find(c => c.name.common === country);
+      return <Country c={c} />
+    }
+
     if (query === '')
       return null
 
@@ -39,7 +45,7 @@ function App() {
           {filteredCountries.map(c => (
             <div key={c.name.common}>
               <span>{c.name.common}</span>
-              <button onClick={() => setQuery(c.name.common)}>Show</button>
+              <button onClick={() => setCountry(c.name.common)}>Show</button>
             </div>
           ))}
         </div>
@@ -47,18 +53,7 @@ function App() {
     
     if(filteredCountries.length === 1) {
       const c = filteredCountries[0];
-      return (
-        <div>
-          <h1>{c.name.common}</h1>
-          <p>{c.capital}</p>
-          <p>Area {c.area}</p>
-          <h2>Languages</h2>
-          <ul>
-            {Object.values(c.languages || {}).map(language => <li key={language}>{language}</li>)}
-          </ul>
-          <img src={c.flags.png} />
-        </div>
-      )
+      return <Country c={c} />
     }
   }
   return (
