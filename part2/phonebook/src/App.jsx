@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Persons } from './Persons';
 import { PersonsForm } from './PersonsForm';
 import { Filter } from './Filter';
+import Notification from './Notification';
 import personService from '../services/persons';
 
 const App = () => {
@@ -9,6 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
+  const [successfullyMsg, setSuccessfullyMsg] = useState(null);
 
   useEffect(() => {
     personService
@@ -33,10 +35,15 @@ const App = () => {
             setPersons(prevPersons => prevPersons.map(prevPerson => (
               prevPerson.id !== updatedPerson.id ? prevPerson : updatedPerson
             )));
+
+            setNewName('');
+            setNewNumber('');
+            setSuccessfullyMsg(`Updated ${updatedPerson.name} number`);
+            setTimeout(() => {
+              setSuccessfullyMsg(null);
+            }, 3000)
           });
 
-          setNewName('');
-          setNewNumber('');
         }
         return;
       }
@@ -47,6 +54,10 @@ const App = () => {
         setPersons(prev => [...prev, newPerson]);
         setNewName('');
         setNewNumber('');
+        setSuccessfullyMsg(`Added ${newPerson.name}`);
+        setTimeout(() => {
+          setSuccessfullyMsg(null);
+        }, 3000);
       })
       .catch(error => console.log("fail", error));
   }
@@ -75,6 +86,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successfullyMsg} />
       <Filter
         handleSearch={handleSearch}
         filter={filter}
