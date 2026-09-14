@@ -36,7 +36,12 @@ function App() {
     if (filteredCountries.length > 1)
       return (
         <div>
-          {filteredCountries.map(c => <p key={c.name.common}>{c.name.common}</p>)}
+          {filteredCountries.map(c => (
+            <div key={c.name.common}>
+              <span>{c.name.common}</span>
+              <button onClick={() => setQuery(c.name.common)}>Show</button>
+            </div>
+          ))}
         </div>
       )
     
@@ -49,7 +54,7 @@ function App() {
           <p>Area {c.area}</p>
           <h2>Languages</h2>
           <ul>
-            {Object.values(c.languages).map(language => <li key={language}>{language}</li>)}
+            {Object.values(c.languages || {}).map(language => <li key={language}>{language}</li>)}
           </ul>
           <img src={c.flags.png} />
         </div>
@@ -58,7 +63,7 @@ function App() {
   }
   return (
     <>
-      <form>
+      <form onSubmit={(e) => e.preventDefault()}>
         <div>
           find countries <input value={query} onChange={handleSearch} />
         </div>
