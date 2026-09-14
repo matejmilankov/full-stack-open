@@ -22,6 +22,7 @@ function App() {
 
   const handleSearch = (event) => {
     setQuery(event.target.value);
+    setCountry(null);
   }
 
 

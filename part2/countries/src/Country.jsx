@@ -6,9 +6,12 @@ export function Country({ c }) {
     const [weather, setWeather] = useState(null);
 
     useEffect(() => {
+        const capital = c.capital ? c.capital[0] : null;
+        if(!capital) return;
+
         const fetchWeather = async () => {
             try {
-                const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${c.capital[0]}&appid=${api_key}&units=metric`);
+                const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${capital}&appid=${api_key}&units=metric`);
                 setWeather(response.data);
             } catch(err) {
                 console.log("Weather fetch failed", err);
@@ -16,7 +19,7 @@ export function Country({ c }) {
         }
 
         fetchWeather();
-    }, [api_key, c]);
+    }, [c.capital, api_key]);
 
     return (
         <div>
