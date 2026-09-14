@@ -10,7 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
-  const [successfullyMsg, setSuccessfullyMsg] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     personService
@@ -38,10 +38,18 @@ const App = () => {
 
             setNewName('');
             setNewNumber('');
-            setSuccessfullyMsg(`Updated ${updatedPerson.name} number`);
+            setNotification({msg: `Updated ${updatedPerson.name} number`, type: "success"});
             setTimeout(() => {
-              setSuccessfullyMsg(null);
-            }, 3000)
+              setNotification(null);
+            }, 3000);
+          })
+          .catch(error => {
+            console.log("Fail", error);
+            setNotification({msg: `Information of ${existingPerson.name} has already been removed from server`, type: "error"});
+            setPersons(prevPersons => prevPersons.filter(prevPerson => prevPerson.id !== existingPerson.id));
+            setTimeout(() => {
+              setNotification(null);
+            }, 3000);
           });
 
         }
@@ -54,9 +62,9 @@ const App = () => {
         setPersons(prev => [...prev, newPerson]);
         setNewName('');
         setNewNumber('');
-        setSuccessfullyMsg(`Added ${newPerson.name}`);
+        setNotification({msg: `Added ${newPerson.name}`, type: "success"});
         setTimeout(() => {
-          setSuccessfullyMsg(null);
+          setNotification(null);
         }, 3000);
       })
       .catch(error => console.log("fail", error));
@@ -86,7 +94,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={successfullyMsg} />
+      <Notification message={notification} />
       <Filter
         handleSearch={handleSearch}
         filter={filter}
