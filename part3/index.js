@@ -79,12 +79,13 @@ app.put('/api/persons/:id', (request, response, next) => {
     const options = { new: true, runValidators: true };
 
     Phonebook.findByIdAndUpdate(request.params.id, { name, number }, options)
-        .then(result => {
-            response.status(200).json(result);
+        .then(updatedPerson => {
+            if(updatedPerson)
+                response.status(200).json(updatedPerson);
+            else
+                response.status(404).end();
         })
         .catch(error => next(error));
-
-    
 });
 
 const unknownEndpoint = (request, response) => {
