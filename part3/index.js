@@ -17,9 +17,6 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 
 // Endpoints
-const genereateId = () => {
-    return String(Math.floor(Math.random() * 1000000 + 1));
-}
 
 app.get('/api/persons', (request, response) => {
     Phonebook.find({}).then(persons => {
@@ -62,20 +59,14 @@ app.post('/api/persons', (request, response) => {
         });
     }
 
-    if(persons.some(person => person.name === body.name)) {
-        return response.status(400).json({
-            error: 'name must be unique'
-        });
-    }
-
-    const person = {
-        id: genereateId(),
+    const person = new Phonebook({
         name: body.name,
         number: body.number
-    }
-    persons = persons.concat(person);
-
-    return response.json(person);
+    });
+    
+    person.save().then(savedPerson => {
+        response.json(savedPerson);
+    });
 });
 
 const PORT = process.env.PORT;
