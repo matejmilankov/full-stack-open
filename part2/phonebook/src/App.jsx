@@ -28,9 +28,9 @@ const App = () => {
     event.preventDefault();
     if (persons.some(person => person.name === newName)) {
       const existingPerson = persons.find(person => person.name === newName);
-      if(window.confirm(`${existingPerson.name} is already added to phonebook, replace the old number with new one?`)) {
+      if (window.confirm(`${existingPerson.name} is already added to phonebook, replace the old number with new one?`)) {
         personService
-          .update(existingPerson.id, {name: existingPerson.name, number: newNumber})
+          .update(existingPerson.id, { name: existingPerson.name, number: newNumber })
           .then(updatedPerson => {
             setPersons(prevPersons => prevPersons.map(prevPerson => (
               prevPerson.id !== updatedPerson.id ? prevPerson : updatedPerson
@@ -38,23 +38,23 @@ const App = () => {
 
             setNewName('');
             setNewNumber('');
-            setNotification({msg: `Updated ${updatedPerson.name} number`, type: "success"});
+            setNotification({ msg: `Updated ${updatedPerson.name} number`, type: "success" });
             setTimeout(() => {
               setNotification(null);
             }, 3000);
           })
           .catch(error => {
             console.log("Fail", error);
-            setNotification({msg: `Information of ${existingPerson.name} has already been removed from server`, type: "error"});
+            setNotification({ msg: `Information of ${existingPerson.name} has already been removed from server`, type: "error" });
             setPersons(prevPersons => prevPersons.filter(prevPerson => prevPerson.id !== existingPerson.id));
             setTimeout(() => {
               setNotification(null);
             }, 3000);
           });
 
-        }
-        return;
       }
+      return;
+    }
 
     personService
       .create({ name: newName, number: newNumber })
@@ -62,12 +62,17 @@ const App = () => {
         setPersons(prev => [...prev, newPerson]);
         setNewName('');
         setNewNumber('');
-        setNotification({msg: `Added ${newPerson.name}`, type: "success"});
+        setNotification({ msg: `Added ${newPerson.name}`, type: "success" });
         setTimeout(() => {
           setNotification(null);
         }, 3000);
       })
-      .catch(error => console.log("fail", error));
+      .catch(err => {
+        setNotification({ type: "error", msg: err.response.data.error });
+        setTimeout(() => {
+          setNotification(null);
+        }, 3000)
+      });
   }
 
   const handlePhoneChange = (event) => {
