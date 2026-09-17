@@ -24,11 +24,14 @@ app.get('/api/persons', (request, response) => {
 });
 
 app.get('/info', (request, response) => {
-    const currentDate = new Date().toString();
-    response.send(`
-        <p>Phonebook has info for ${persons.length} people</p>
-        <p>${currentDate}</p>
-    `);
+    Phonebook.countDocuments({})
+        .then(count => {
+            const currentDate = new Date().toString();
+            response.send(`
+                <p>Phonebook has info for ${count} people</p>
+                <p>${currentDate}</p>
+            `);
+        });
 });
 
 app.get('/api/persons/:id', (request, response, next) => {
