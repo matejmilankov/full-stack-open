@@ -7,7 +7,13 @@ const middleware = require('./utils/middleware');
 
 const app = express()
 
-mongoose.connect(config.MONGODB_URI, { family: 4 });
+mongoose.connect(config.MONGODB_URI, { family: 4 })
+    .then(() => {
+        logger.info('connceted to MongoDB');
+    })
+    .catch((error) => {
+        logger.error('error connecting to MongoDB', error.message);
+    });
 
 
 app.use(express.json());
