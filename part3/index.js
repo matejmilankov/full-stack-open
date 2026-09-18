@@ -16,7 +16,6 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 
 // Endpoints
-
 app.get('/api/persons', (request, response) => {
   Phonebook.find({}).then(persons => {
     response.json(persons)
