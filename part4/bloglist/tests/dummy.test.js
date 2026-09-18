@@ -95,7 +95,21 @@ describe('favorite blog', () => {
         assert.strictEqual(listHelper.favoriteBlog(listWithOneBlog), listWithOneBlog[0]);
     });
 
-    test('of a bigger list is calculted right', () => {
+    test('of a bigger list, is the one with most likes', () => {
         assert.strictEqual(listHelper.favoriteBlog(blogs), blogs[2]);
     });
 });
+
+describe('most blogs', () => {
+    test('of empty list is null', () => {
+        assert.strictEqual(listHelper.mostBlogs([]), null);
+    });
+
+    test('when list has only one blog equals the likes of that', () => {
+        assert.deepEqual(listHelper.mostBlogs(listWithOneBlog), { author: 'Edsger W. Dijkstra',blogs: 1 });
+    });
+
+    test('of a bigger list, is the one with most likes', () => {
+        assert.deepEqual(listHelper.mostBlogs(blogs), { author: 'Robert C. Martin', blogs: 3 });
+    });
+})
