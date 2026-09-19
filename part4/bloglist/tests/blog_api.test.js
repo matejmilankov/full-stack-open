@@ -29,7 +29,7 @@ describe('when there is initially some blogs saved', () => {
         assert(response.body[0].id);
     });
 
-    
+
     describe('addition of a new blog', () => {
         test('succeeds with valid data', async () => {
             const newBlog = {
@@ -38,16 +38,16 @@ describe('when there is initially some blogs saved', () => {
                 url: 'https://react.dev',
                 likes: 3
             }
-        
+
             await api
                 .post('/api/blogs')
                 .send(newBlog)
                 .expect(201)
                 .expect('Content-Type', /application\/json/)
-        
+
             const blogsAtEnd = await helper.blogsInDb();
             const titles = blogsAtEnd.map(blog => blog.title);
-        
+
             assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1);
             assert(titles.includes('async await is cool'));
         });
@@ -57,44 +57,44 @@ describe('when there is initially some blogs saved', () => {
                 author: 'Dan Abramov',
                 url: 'https://react.dev',
             }
-        
+
             const response = await api
                 .post('/api/blogs')
                 .send(newBlog)
                 .expect(201)
                 .expect('Content-Type', /application\/json/)
-        
+
             assert.strictEqual(response.body.likes, 0);
         });
-        
+
         test('fails with status code 400 if url is missing', async () => {
             const newBlog = {
                 title: 'http is powerfull',
                 author: 'Dan Abramov',
                 likes: 3
             }
-        
+
             await api
                 .post('/api/blogs')
                 .send(newBlog)
                 .expect(400)
-        
+
             const blogs = await helper.blogsInDb();
             assert.strictEqual(blogs.length, helper.initialBlogs.length);
         });
-        
+
         test('fails with status code 400 if title is missing', async () => {
             const newBlog = {
                 author: 'Dan Abramov',
                 url: 'https://react.dev',
                 likes: 3
             }
-        
+
             await api
                 .post('/api/blogs')
                 .send(newBlog)
                 .expect(400)
-        
+
             const blogs = await helper.blogsInDb();
             assert.strictEqual(blogs.length, helper.initialBlogs.length);
         });
@@ -102,19 +102,86 @@ describe('when there is initially some blogs saved', () => {
 
 
     describe('deletion of a blog', () => {
-        test('succeeds', async () => {
+        test('succeeds with status code 204 if id is valid', async () => {
             const blogsAtStart = await helper.blogsInDb();
             const blogToDelete = blogsAtStart[0];
 
             await api
                 .delete(`/api/blogs/${blogToDelete.id}`)
                 .expect(204);
-            
+
             const blogsAtEnd = await helper.blogsInDb();
-            const ids = blogsAtEnd.map(b => b.id)
-            
+            const ids = blogsAtEnd.map(b => b.id);
+
             assert(!ids.includes(blogToDelete.id));
             assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
+        });
+
+        test('fails with status code 400 if id is invalid', async () => {
+            const id = '5a3d5da59570ed08cc00010x';
+            await api.delete(`/api/blogs/${id}`).expect(400);
+        });
+
+        test('succeeds with status code 204 if blog does not exist', async () => {
+            const id = await helper.nonExistingId();
+            await api.delete(`/api/blogs/${id}`).expect(204);
+        })
+    });
+
+    describe('update of a blog', () => {
+        test('succeeds with valid data', async () => {
+            const blogsAtStart = await helper.blogsInDb()
+            const blogToUpdate = blogsAtStart[0];
+
+            const updatedBlogData = {
+                title: blogToUpdate.title,
+                author: blogToUpdate.author,
+                url: blogToUpdate.url,
+                likes: blogToUpdate.likes + 1
+            }
+
+            const response = await api
+                .put(`/api/blogs/${blogToUpdate.id}`)
+                .send(updatedBlogData)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+
+            assert.strictEqual(response.body.likes, blogToUpdate.likes + 1);
+
+            const blogsAtEnd = await helper.blogsInDb();
+            const updatedBlog = blogsAtEnd.find(b => b.id === blogToUpdate.id);
+
+            assert.strictEqual(updatedBlog.likes, blogToUpdate.likes + 1);
+        });
+
+        test('fails with status code 404 if id invalid', async () => {
+            const id = await helper.nonExistingId();
+            const updatedBlogData = {
+                title: 'Non existing blog',
+                author: 'Dan Abramov',
+                url: 'https://react.dev',
+                likes: 10
+            }
+
+            await api
+                .put(`/api/blogs/${id}`)
+                .send(updatedBlogData)
+                .expect(404)
+        });
+
+        test('fails with status code 400 if blog doesnt exists', async () => {
+            const id = '5a3d5da59570ed08cc00010x';
+            const updatedBlogData = {
+                title: 'Non existing blog',
+                author: 'Dan Abramov',
+                url: 'https://react.dev',
+                likes: 10
+            }
+
+            await api
+                .put(`/api/blogs/${id}`)
+                .send(updatedBlogData)
+                .expect(400);
         });
     });
 
