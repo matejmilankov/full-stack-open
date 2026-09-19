@@ -54,3 +54,24 @@ test('unique identifier property of the blog posts is named id', async () => {
     const response = await api.get('/api/blogs');
     assert(response.body[0].id);
 });
+
+test('a valid blog can be added', async () => {
+    const newBlog = {
+        title: 'async await is cool',
+        author: 'Dan Abramov',
+        url: 'https://react.dev',
+        likes: 3
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs');
+    const titles = response.body.map(blog => blog.title);
+
+    assert.strictEqual(response.body.length, initialBlogs.length + 1);
+    assert(titles.includes('async await is cool'));
+});
