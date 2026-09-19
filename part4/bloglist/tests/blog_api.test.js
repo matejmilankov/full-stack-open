@@ -75,3 +75,19 @@ test('a valid blog can be added', async () => {
     assert.strictEqual(response.body.length, initialBlogs.length + 1);
     assert(titles.includes('async await is cool'));
 });
+
+test('likes propery is missing', async () => {
+    const newBlog = {
+        title: 'fullstack is fun',
+        author: 'Dan Abramov',
+        url: 'https://react.dev',
+    }
+
+    const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+    
+    assert.strictEqual(response.body.likes, 0);
+});
