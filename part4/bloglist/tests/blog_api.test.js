@@ -4,31 +4,14 @@ const supertest = require('supertest');
 const app = require('../app');
 const assert = require('node:assert');
 const Blog = require('../models/blog');
+const helper = require('./test_helper');
 
 // superagent object
 const api = supertest(app);
 
-const initialBlogs = [
-    {
-        title: 'HTML is easy',
-        author: 'Dan Abramov',
-        url: 'https://react.dev',
-        likes: 5
-    },
-    {
-        title: 'I am gonna become full-stack',
-        author: 'Matej Milankov',
-        url: 'https://react.dev',
-        likes: 20
-    }
-];
-
 beforeEach(async () => {
     await Blog.deleteMany({});
-    let blogObj = new Blog(initialBlogs[0]);
-    await blogObj.save();
-    blogObj = new Blog(initialBlogs[1]);
-    await blogObj.save();
+    await Blog.insertMany(helper.initialBlogs);
 });
 
 
@@ -46,7 +29,7 @@ after(async () => {
 
 test('all blogs are returend', async () => {
     const response = await api.get('/api/blogs');
-    assert.strictEqual(response.body.length, initialBlogs.length);
+    assert.strictEqual(response.body.length, helper.initialBlogs.length);
 });
 
 
@@ -69,10 +52,10 @@ test('a valid blog can be added', async () => {
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs');
-    const titles = response.body.map(blog => blog.title);
+    const blogsAtEnd = await helper.blogsInDb();
+    const titles = blogsAtEnd.map(blog => blog.title);
 
-    assert.strictEqual(response.body.length, initialBlogs.length + 1);
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1);
     assert(titles.includes('async await is cool'));
 });
 
@@ -88,6 +71,38 @@ test('likes propery is missing', async () => {
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
-    
+
     assert.strictEqual(response.body.likes, 0);
+});
+
+test('blog without url is not added', async () => {
+    const newBlog = {
+        title: 'http is powerfull',
+        author: 'Dan Abramov',
+        likes: 3
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+
+    const blogs = await helper.blogsInDb();
+    assert.strictEqual(blogs.length, helper.initialBlogs.length);
+});
+
+test('blog without title is not added', async () => {
+    const newBlog = {
+        author: 'Dan Abramov',
+        url: 'https://react.dev',
+        likes: 3
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+
+    const blogs = await helper.blogsInDb();
+    assert.strictEqual(blogs.length, helper.initialBlogs.length);
 });
