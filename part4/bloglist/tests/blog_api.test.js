@@ -48,3 +48,9 @@ test('all blogs are returend', async () => {
     const response = await api.get('/api/blogs');
     assert.strictEqual(response.body.length, initialBlogs.length);
 });
+
+
+test('unique identifier property of the blog posts is named id', async () => {
+    const response = await api.get('/api/blogs');
+    assert(response.body[0].id);
+});
