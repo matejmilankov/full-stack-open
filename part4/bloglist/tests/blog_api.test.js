@@ -101,6 +101,24 @@ describe('when there is initially some blogs saved', () => {
     });
 
 
+    describe('deletion of a blog', () => {
+        test('succeeds', async () => {
+            const blogsAtStart = await helper.blogsInDb();
+            const blogToDelete = blogsAtStart[0];
+
+            await api
+                .delete(`/api/blogs/${blogToDelete.id}`)
+                .expect(204);
+            
+            const blogsAtEnd = await helper.blogsInDb();
+            const ids = blogsAtEnd.map(b => b.id)
+            
+            assert(!ids.includes(blogToDelete.id));
+            assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
+        });
+    });
+
+
     after(async () => {
         await mongoose.connection.close();
     });
