@@ -5,6 +5,8 @@ const app = require('../app');
 const assert = require('node:assert');
 const Blog = require('../models/blog');
 const helper = require('./test_helper');
+const bcrypt = require('bcrypt');
+const User = require('../models/user');
 
 // superagent object
 const api = supertest(app);
@@ -12,7 +14,20 @@ const api = supertest(app);
 describe('when there is initially some blogs saved', () => {
     beforeEach(async () => {
         await Blog.deleteMany({});
-        await Blog.insertMany(helper.initialBlogs);
+        await User.deleteMany({});
+
+        const passwordHash = await bcrypt.hash('sekret', 10);
+        const user = new User({
+            username: 'root',
+            name: 'Superuser',
+            passwordHash
+        });
+        await user.save();
+
+        const updatedBlogs = helper.initialBlogs.map(blog => (
+            new Blog({...blog, user: user._id})
+        ));
+        await Promise.all(updatedBlogs.map(blog => blog.save()));
     });
     test('blogs are returned as json', async () => {
         await api
@@ -32,11 +47,13 @@ describe('when there is initially some blogs saved', () => {
 
     describe('addition of a new blog', () => {
         test('succeeds with valid data', async () => {
+            const users = await helper.usersInDb();
             const newBlog = {
                 title: 'async await is cool',
                 author: 'Dan Abramov',
                 url: 'https://react.dev',
-                likes: 3
+                likes: 3,
+                userId: users[0].id
             }
 
             await api
@@ -52,10 +69,12 @@ describe('when there is initially some blogs saved', () => {
             assert(titles.includes('async await is cool'));
         });
         test('defaults to 0 likes if likes property is missing', async () => {
+            const users = await helper.usersInDb();
             const newBlog = {
                 title: 'fullstack is fun',
                 author: 'Dan Abramov',
                 url: 'https://react.dev',
+                userId: users[0].id
             }
 
             const response = await api
