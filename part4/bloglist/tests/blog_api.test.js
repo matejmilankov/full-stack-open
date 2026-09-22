@@ -151,12 +151,18 @@ describe('when there is initially some blogs saved', () => {
 
         test('fails with status code 400 if id is invalid', async () => {
             const id = '5a3d5da59570ed08cc00010x';
-            await api.delete(`/api/blogs/${id}`).expect(400);
+            await api
+                .delete(`/api/blogs/${id}`)
+                .set('Authorization', `Bearer ${token}`)
+                .expect(400);
         });
 
         test('succeeds with status code 204 if blog does not exist', async () => {
             const id = await helper.nonExistingId();
-            await api.delete(`/api/blogs/${id}`).expect(204);
+            await api
+                .delete(`/api/blogs/${id}`)
+                .set('Authorization', `Bearer ${token}`)
+                .expect(204);
         });
     });
 
