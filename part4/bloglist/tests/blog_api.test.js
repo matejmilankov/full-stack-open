@@ -55,13 +55,11 @@ describe('when there is initially some blogs saved', () => {
 
     describe('addition of a new blog', () => {
         test('succeeds with valid data', async () => {
-            const users = await helper.usersInDb();
             const newBlog = {
                 title: 'async await is cool',
                 author: 'Dan Abramov',
                 url: 'https://react.dev',
-                likes: 3,
-                userId: users[0].id
+                likes: 3
             }
 
             await api
@@ -78,12 +76,10 @@ describe('when there is initially some blogs saved', () => {
             assert(titles.includes('async await is cool'));
         });
         test('defaults to 0 likes if likes property is missing', async () => {
-            const users = await helper.usersInDb();
             const newBlog = {
                 title: 'fullstack is fun',
                 author: 'Dan Abramov',
-                url: 'https://react.dev',
-                userId: users[0].id
+                url: 'https://react.dev'
             }
 
             const response = await api
@@ -128,6 +124,24 @@ describe('when there is initially some blogs saved', () => {
 
             const blogs = await helper.blogsInDb();
             assert.strictEqual(blogs.length, helper.initialBlogs.length);
+        });
+
+        test('fails with status code 401 if jwt token is missing', async () => {
+            const blogsAtStart = await helper.blogsInDb();
+
+            const newBlog = {
+                title: 'fullstack is fun',
+                author: 'Dan Abramov',
+                url: 'https://react.dev'
+            }
+
+            await api
+                .post('/api/blogs')
+                .send(newBlog)
+                .expect(401);
+
+            const blogsAtEnd = await helper.blogsInDb();
+            assert.strictEqual(blogsAtEnd.length, blogsAtStart.length);
         });
     });
 
