@@ -139,6 +139,7 @@ describe('when there is initially some blogs saved', () => {
 
             await api
                 .delete(`/api/blogs/${blogToDelete.id}`)
+                .set('Authorization', `Bearer ${token}`)
                 .expect(204);
 
             const blogsAtEnd = await helper.blogsInDb();
@@ -156,7 +157,7 @@ describe('when there is initially some blogs saved', () => {
         test('succeeds with status code 204 if blog does not exist', async () => {
             const id = await helper.nonExistingId();
             await api.delete(`/api/blogs/${id}`).expect(204);
-        })
+        });
     });
 
     describe('update of a blog', () => {

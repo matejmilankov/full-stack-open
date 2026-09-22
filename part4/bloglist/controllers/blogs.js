@@ -44,14 +44,14 @@ blogRouter.post('/', async (request, response) => {
 blogRouter.delete('/:id', async (request, response) => {
     const blog = await Blog.findById(request.params.id);
     if (!blog)
-        return response.status(404).json({ error: 'blog doesnt exists'});
+        return response.status(204).end();
 
     const decodedToken = jwt.verify(request.token, process.env.SECRET);
     if(!decodedToken.id)
-        return response.status(401).json({ error: 'invalid token'});
+        return response.status(401).json({ error: 'invalid token' });
 
     if(blog.user.toString() !== decodedToken.id.toString())
-        return response.status(401).json({ error: 'only the creator can delete this blog'});
+        return response.status(401).json({ error: 'only the creator can delete this blog' });
 
     await blog.deleteOne();
     response.status(204).end();
