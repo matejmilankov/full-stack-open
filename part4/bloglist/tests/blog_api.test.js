@@ -7,9 +7,11 @@ const Blog = require('../models/blog');
 const helper = require('./test_helper');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 // superagent object
 const api = supertest(app);
+let token = null;
 
 describe('when there is initially some blogs saved', () => {
     beforeEach(async () => {
@@ -22,7 +24,13 @@ describe('when there is initially some blogs saved', () => {
             name: 'Superuser',
             passwordHash
         });
-        await user.save();
+        const savedUser = await user.save();
+
+        const userForToken = {
+            username: savedUser.username,
+            id: savedUser._id
+        }
+        token = jwt.sign(userForToken, process.env.SECRET);
 
         const updatedBlogs = helper.initialBlogs.map(blog => (
             new Blog({...blog, user: user._id})
@@ -58,6 +66,7 @@ describe('when there is initially some blogs saved', () => {
 
             await api
                 .post('/api/blogs')
+                .set('Authorization', `Bearer ${token}`)
                 .send(newBlog)
                 .expect(201)
                 .expect('Content-Type', /application\/json/)
@@ -79,6 +88,7 @@ describe('when there is initially some blogs saved', () => {
 
             const response = await api
                 .post('/api/blogs')
+                .set('Authorization', `Bearer ${token}`)
                 .send(newBlog)
                 .expect(201)
                 .expect('Content-Type', /application\/json/)
@@ -95,6 +105,7 @@ describe('when there is initially some blogs saved', () => {
 
             await api
                 .post('/api/blogs')
+                .set('Authorization', `Bearer ${token}`)
                 .send(newBlog)
                 .expect(400)
 
@@ -111,6 +122,7 @@ describe('when there is initially some blogs saved', () => {
 
             await api
                 .post('/api/blogs')
+                .set('Authorization', `Bearer ${token}`)
                 .send(newBlog)
                 .expect(400)
 
