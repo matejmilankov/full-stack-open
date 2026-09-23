@@ -7,10 +7,12 @@ export function AddBlogForm({ addBlog }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        await addBlog(title, author, url);
-        setTitle('');
-        setAuthor('');
-        setUrl('');
+        const success = await addBlog(title, author, url);
+        if(success) {
+            setTitle('');
+            setAuthor('');
+            setUrl('');
+        }
     }
 
     return (
