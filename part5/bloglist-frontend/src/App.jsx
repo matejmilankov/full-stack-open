@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { LoginForm } from './components/LoginForm';
 import { AddBlogForm } from './components/AddBlogForm';
 import { Notification } from './components/Notification';
+import { Togglable } from './components/Togglable';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
@@ -45,9 +46,9 @@ const App = () => {
     setUser(null);
   }
 
-  const addBlog = async (title, author, url) => {
+  const addBlog = async (blogObject) => {
     try {
-      const newBlog = await blogService.create({ title, author, url });
+      const newBlog = await blogService.create(blogObject);
       setBlogs(prevBlogs => [...prevBlogs, newBlog]);
       setMessage({ text: `a new blog ${newBlog.title} by ${newBlog.author} added`, type: 'success' });
       setTimeout(() => setMessage(null), 3000);
@@ -78,10 +79,12 @@ const App = () => {
             <p>{user.name} logged in</p>
           </div>
 
-          <div>
-            <h1>create new</h1>
-            <AddBlogForm addBlog={addBlog} />
-          </div>
+          <Togglable buttonLabel="create blog">
+            <div>
+              <h1>create new</h1>
+              <AddBlogForm addBlog={addBlog} />
+            </div>
+          </Togglable>
 
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />

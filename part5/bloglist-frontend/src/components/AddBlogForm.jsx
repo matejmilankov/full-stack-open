@@ -7,7 +7,7 @@ export function AddBlogForm({ addBlog }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const success = await addBlog(title, author, url);
+        const success = await addBlog({ title, author, url });
         if(success) {
             setTitle('');
             setAuthor('');
