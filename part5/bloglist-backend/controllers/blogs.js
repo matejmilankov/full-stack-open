@@ -44,12 +44,12 @@ blogRouter.delete('/:id', userExtractor, async (request, response) => {
 });
 
 blogRouter.put('/:id', async (request, response) => {
-    const { title, author, likes, url } = request.body;
+    const { title, author, likes, url, user } = request.body;
     const updatedBlog = await Blog.findByIdAndUpdate(
         request.params.id, 
-        {title, author, likes, url}, 
+        {title, author, likes, url, user: user.id}, 
         { returnDocument: 'after' }
-    );
+    ).populate('user', { username: 1, name: 1 });
     
     if(!updatedBlog)
         return response.status(404).send({ error: 'blog not found' })

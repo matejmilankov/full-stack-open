@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeBlog }) => {
   const [visible, setVisible] = useState(false);
 
   const blogStyle = {
@@ -13,6 +13,23 @@ const Blog = ({ blog }) => {
 
   const toggleVisibility = () => setVisible(!visible);
 
+  // prilikom dodavanja novog korisnika
+  // post endpoint vrati objekat sa polje user koji nije populate-ovan
+  // zato bi blog.user.id bio undefined, pa uvodim optional chaining
+  const handleLike = async (event) => {
+    event.preventDefault();
+    const updatedBlog = {
+      id: blog.id,
+      title: blog.title,
+      url: blog.url,
+      author: blog.author,
+      likes: blog.likes + 1,
+      user: blog.user?.id || blog.user
+    }
+    console.log(updatedBlog)
+    await likeBlog(updatedBlog);
+  }
+
   return (
     <div style={blogStyle}>
       {blog.title} - {blog.author}
@@ -22,9 +39,9 @@ const Blog = ({ blog }) => {
           <p>{blog.url}</p>
           <div>
             likes {blog.likes}
-            <button>like</button>
+            <button onClick={handleLike}>like</button>
           </div>
-          <p>{blog.user.name}</p>
+          <p>{blog.user.name || 'Unkown user'}</p>
         </div>
       )}
     </div>
