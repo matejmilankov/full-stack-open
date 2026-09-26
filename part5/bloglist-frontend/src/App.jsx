@@ -58,7 +58,7 @@ const App = () => {
         ...newBlog,
         user: user
       }
-      
+
       setBlogs(prevBlogs => [...prevBlogs, blogWithUser]);
       setMessage({ text: `a new blog ${newBlog.title} by ${newBlog.author} added`, type: 'success' });
       setTimeout(() => setMessage(null), 3000);
@@ -88,7 +88,7 @@ const App = () => {
   }
 
   const removeBlog = async (blogId) => {
-    try { 
+    try {
       await blogService.remove(blogId);
       setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== blogId));
     } catch (err) {
