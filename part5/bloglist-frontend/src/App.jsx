@@ -54,7 +54,12 @@ const App = () => {
   const addBlog = async (blogObject) => {
     try {
       const newBlog = await blogService.create(blogObject);
-      setBlogs(prevBlogs => [...prevBlogs, newBlog]);
+      const blogWithUser = {
+        ...newBlog,
+        user: user
+      }
+      
+      setBlogs(prevBlogs => [...prevBlogs, blogWithUser]);
       setMessage({ text: `a new blog ${newBlog.title} by ${newBlog.author} added`, type: 'success' });
       setTimeout(() => setMessage(null), 3000);
       blogFormRef.current.toggleVisibility();
@@ -77,6 +82,17 @@ const App = () => {
       )));
     } catch (err) {
       const errorMessage = err.response?.data?.error || 'Error liking blog';
+      setMessage({ text: errorMessage, type: 'error' });
+      setTimeout(() => setMessage(null), 3000);
+    }
+  }
+
+  const removeBlog = async (blogId) => {
+    try { 
+      await blogService.remove(blogId);
+      setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== blogId));
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || 'Error deleting blog';
       setMessage({ text: errorMessage, type: 'error' });
       setTimeout(() => setMessage(null), 3000);
     }
@@ -113,6 +129,8 @@ const App = () => {
                 key={blog.id}
                 blog={blog}
                 likeBlog={likeBlog}
+                removeBlog={removeBlog}
+                user={user}
               />
             )
           }
