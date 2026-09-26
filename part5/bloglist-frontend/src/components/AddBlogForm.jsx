@@ -8,7 +8,7 @@ export function AddBlogForm({ addBlog }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const success = await addBlog({ title, author, url });
-    if(success) {
+    if (success) {
       setTitle('');
       setAuthor('');
       setUrl('');
@@ -18,27 +18,30 @@ export function AddBlogForm({ addBlog }) {
   return (
     <form onSubmit={handleSubmit}>
       <label style={{ display: 'block' }}>
-                title
+        title
         <input
           type="text"
           value={title}
           onChange={({ target }) => setTitle(target.value)}
+          placeholder='Enter title'
         />
       </label>
       <label style={{ display: 'block' }}>
-                author
+        author
         <input
           type="text"
           value={author}
           onChange={({ target }) => setAuthor(target.value)}
+          placeholder='Enter author'
         />
       </label>
       <label>
-                url
+        url
         <input
           type="text"
           value={url}
           onChange={({ target }) => setUrl(target.value)}
+          placeholder='Enter url'
         />
       </label>
       <input style={{ display: 'block' }} type="submit" value="create" />

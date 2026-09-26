@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import Blog from './Blog';
 import userEvent from '@testing-library/user-event';
-import { expect, vi } from 'vitest';
+import { vi } from 'vitest';
 
 test('check blog title and author', () => {
     const blog = {
