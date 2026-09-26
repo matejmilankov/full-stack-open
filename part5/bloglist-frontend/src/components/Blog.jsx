@@ -26,7 +26,6 @@ const Blog = ({ blog, likeBlog }) => {
       likes: blog.likes + 1,
       user: blog.user?.id || blog.user
     }
-    console.log(updatedBlog)
     await likeBlog(updatedBlog);
   }
 

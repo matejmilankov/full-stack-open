@@ -15,9 +15,12 @@ const App = () => {
   const blogFormRef = useRef(null);
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    const fetchBlogs = async () => {
+      const response = await blogService.getAll();
+      setBlogs(response);
+    }
+
+    fetchBlogs();
   }, []);
 
   useEffect(() => {
@@ -81,7 +84,7 @@ const App = () => {
 
   return (
     <>
-      {message && <Notification message={message}/>}
+      {message && <Notification message={message} />}
       {user === null ? (
         <>
           <h1>login to application</h1>
@@ -102,13 +105,17 @@ const App = () => {
             </div>
           </Togglable>
 
-          {blogs.map(blog =>
-            <Blog 
-              key={blog.id} 
-              blog={blog}
-              likeBlog={likeBlog} 
-            />
-          )}
+          {blogs
+            .slice()
+            .sort((curr, next) => next.likes - curr.likes)
+            .map(blog =>
+              <Blog
+                key={blog.id}
+                blog={blog}
+                likeBlog={likeBlog}
+              />
+            )
+          }
         </div>
       )}
     </>
