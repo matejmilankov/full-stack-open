@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test');
+const { loginWith, createBlog } = require('./helper');
 
 describe('Blog app', () => {
     beforeEach(async ({ page, request }) => {
@@ -22,20 +23,50 @@ describe('Blog app', () => {
 
     describe('login', () => {
         test('succeeds with correct credentials', async ({ page }) => {
-            await page.getByLabel('username').fill('root');
-            await page.getByLabel('password').fill('toor');
-            await page.getByRole('button', { name: 'login' }).click();
-
+            await loginWith(page, 'root', 'toor');
             await expect(page.getByText('Superuser logged in')).toBeVisible();
         });
 
         test('fails with wrong credentials', async ({ page }) => {
-            await page.getByLabel('username').fill('root');
-            await page.getByLabel('password').fill('wrong');
-            await page.getByRole('button', { name: 'login' }).click();
+            await loginWith(page, 'root', 'wrong');
 
             const errorDiv = page.locator('.error');
             await expect(errorDiv).toContainText('invalid username or password');
         });
+    });
+
+    describe('When loged in', () => {
+        beforeEach(async ({ page, request }) => {
+            await loginWith(page, 'root', 'toor');
+        });
+
+        test('a new blog can be created', async ({ page }) => {
+            await createBlog(page, {
+                title: 'Test title',
+                author: 'Test author',
+                url: 'Test url'
+            });
+
+            const blogDiv = page.locator('.blog');
+            await expect(blogDiv).toContainText('Test title');
+        });
+
+        describe('and a blog exists', () => {
+            beforeEach(async ({ page }) => {
+                await createBlog(page, {
+                    title: 'Test title',
+                    author: 'Test author',
+                    url: 'Test url'
+                });
+            });
+
+            test('blog details can be viewed', async ({ page }) => {
+                const blogDiv = page.locator('.blog');
+                await blogDiv.getByRole('button', { name: 'view' }).click();
+
+                await expect(blogDiv).toContainText('Test author');
+                await expect(blogDiv).toContainText('Test url');
+            });
+        })
     });
 });
