@@ -10,7 +10,7 @@ export function Notification({ message }) {
   }
 
   return (
-    <div style={style}>
+    <div className={message.type === 'error' ? 'error' : 'success'} style={style}>
       {message.text}
     </div>
   )
