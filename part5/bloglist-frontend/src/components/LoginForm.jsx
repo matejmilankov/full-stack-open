@@ -14,7 +14,7 @@ export function LoginForm({ handleLogin }) {
   return (
     <form onSubmit={handleSubmit}>
       <label style={{ display: 'block' }}>
-                username
+        username
         <input
           type="text"
           value={username}
@@ -22,14 +22,14 @@ export function LoginForm({ handleLogin }) {
         />
       </label>
       <label>
-                password
+        password
         <input
           type="password"
           value={password}
           onChange={({ target }) => setPassword(target.value)}
         />
       </label>
-      <input style={{ display: 'block' }} type="submit" />
+      <input style={{ display: 'block' }} type="submit" value="login" />
     </form>
   )
 }

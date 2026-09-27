@@ -1,3 +1,4 @@
 node_modules
 .env
 part2/phonebook/dist
+coverage/
