@@ -35,8 +35,8 @@ describe('Blog app', () => {
         });
     });
 
-    describe('When loged in', () => {
-        beforeEach(async ({ page, request }) => {
+    describe('When logged in', () => {
+        beforeEach(async ({ page }) => {
             await loginWith(page, 'root', 'toor');
         });
 
@@ -66,6 +66,15 @@ describe('Blog app', () => {
 
                 await expect(blogDiv).toContainText('Test author');
                 await expect(blogDiv).toContainText('Test url');
+            });
+
+            test('blog can be liked', async ({ page }) => {
+                const blogDiv = page.locator('.blog');
+                await blogDiv.getByRole('button', { name: 'view' }).click();
+                await expect(blogDiv).toContainText('likes 0');
+
+                await blogDiv.getByRole('button', { name: 'like' }).click();
+                await expect(blogDiv).toContainText('likes 1');
             });
         })
     });

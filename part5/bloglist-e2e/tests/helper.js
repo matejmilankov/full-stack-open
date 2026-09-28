@@ -6,12 +6,12 @@ const loginWith = async (page, username, password) => {
 
 const createBlog = async (page, { title, author, url }) => {
     await page.getByRole('button', { name: 'create blog' }).click();
-    await page.getByLabel('title').fill('Test title');
-    await page.getByLabel('author').fill('Test author');
-    await page.getByLabel('url').fill('Test url');
+    await page.getByLabel('title').fill(title);
+    await page.getByLabel('author').fill(author);
+    await page.getByLabel('url').fill(url);
     await page.getByRole('button', { name: 'create' }).click();
 
-    await page.getByText(title);
+    await page.locator('.blog').filter({ hasText: title}).waitFor();
 }
 
 module.exports = { 
