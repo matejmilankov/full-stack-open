@@ -11,6 +11,13 @@ describe('Blog app', () => {
                 password: 'toor'
             }
         });
+        await request.post('/api/users', {
+            data: {
+                name: 'Matej',
+                username: 'matejmilankov',
+                password: '0811'
+            }
+        });
 
         await page.goto('/');
     });
@@ -76,6 +83,41 @@ describe('Blog app', () => {
                 await blogDiv.getByRole('button', { name: 'like' }).click();
                 await expect(blogDiv).toContainText('likes 1');
             });
-        })
+
+            test('blog can be deleted', async ({ page }) => {
+                const blogDiv = page.locator('.blog');
+                await blogDiv.getByRole('button', { name: 'view' }).click();
+
+                page.on('dialog', async dialog => {
+                    expect(dialog.message()).toContain('Test title');
+                    await dialog.accept();
+                });
+                await blogDiv.getByRole('button', { name: 'remove' }).click();
+
+                await expect(blogDiv).not.toBeVisible();
+            });
+        });
     });
+
+    describe('when logged in as another user', () => {
+        beforeEach(async ({ page }) => {
+            await loginWith(page, 'root', 'toor');
+            await createBlog(page, {
+                title: 'Test title',
+                author: 'Test author',
+                url: 'Test url'
+            });
+
+            await page.getByRole('button', { name: 'logout' }).click();
+            await loginWith(page, 'matejmilankov', '0811');
+        });
+
+        test('cannot see the remove button on other people\'s blogs', async ({ page }) => {
+            const blogDiv = page.locator('.blog').filter({ hasText: 'Test title' });
+            await blogDiv.getByRole('button', { name: 'view' }).click();
+
+            await expect(blogDiv).toContainText('Test author');
+            await expect(blogDiv.getByRole('button', { name: 'remove' })).not.toBeVisible();
+        });
+    })
 });
