@@ -97,6 +97,53 @@ describe('Blog app', () => {
                 await expect(blogDiv).not.toBeVisible();
             });
         });
+
+        describe('and few blogs exists', () => {
+            beforeEach(async ({ page }) => {
+                await createBlog(page, {
+                    title: 'Test title 1',
+                    author: 'Test author 1',
+                    url: 'Test url 1'
+                });
+                await createBlog(page, {
+                    title: 'Test title 2',
+                    author: 'Test author 2',
+                    url: 'Test url 2'
+                });
+                await createBlog(page, {
+                    title: 'Test title 3',
+                    author: 'Test author 3',
+                    url: 'Test url 3'
+                });
+            });
+
+            test('existing blogs are sorted by likes', async ({ page }) => {
+                const blog1 = page.locator('.blog').filter({ hasText: 'Test title 1' });
+                const blog2 = page.locator('.blog').filter({ hasText: 'Test title 2' });
+                const blog3 = page.locator('.blog').filter({ hasText: 'Test title 3' });
+
+                await blog1.getByRole('button', { name: 'view' }).click();
+                await blog2.getByRole('button', { name: 'view' }).click();
+                await blog3.getByRole('button', { name: 'view' }).click();
+
+                // blog1 = 1 likes
+                await blog1.getByRole('button', { name: 'like' }).click();
+                await expect(blog1).toContainText('likes 1');
+
+                // blog2 = 2 likes
+                await blog2.getByRole('button', { name: 'like' }).click();
+                await expect(blog2).toContainText('likes 1');
+                await blog2.getByRole('button', { name: 'like' }).click();
+                await expect(blog2).toContainText('likes 2');
+
+                const sortedBlogs = await page.locator('.blog').all();
+
+                await expect(sortedBlogs[0]).toContainText('Test title 2');
+                await expect(sortedBlogs[1]).toContainText('Test title 1');
+                await expect(sortedBlogs[2]).toContainText('Test title 3');
+            });
+
+        });
     });
 
     describe('when logged in as another user', () => {
