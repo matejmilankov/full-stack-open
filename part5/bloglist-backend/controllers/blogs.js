@@ -44,10 +44,10 @@ blogRouter.delete('/:id', userExtractor, async (request, response) => {
 });
 
 blogRouter.put('/:id', userExtractor, async (request, response) => {
-    const { title, author, likes, url, user } = request.body;
+    const { title, author, likes, url } = request.body;
     const updatedBlog = await Blog.findByIdAndUpdate(
         request.params.id, 
-        {title, author, likes, url, user: user.id}, 
+        { title, author, likes, url },
         { returnDocument: 'after' }
     ).populate('user', { username: 1, name: 1 });
     

@@ -194,6 +194,7 @@ describe('when there is initially some blogs saved', () => {
 
             const response = await api
                 .put(`/api/blogs/${blogToUpdate.id}`)
+                .set('Authorization', `Bearer ${token}`)
                 .send(updatedBlogData)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
@@ -217,6 +218,7 @@ describe('when there is initially some blogs saved', () => {
 
             await api
                 .put(`/api/blogs/${id}`)
+                .set('Authorization', `Bearer ${token}`)
                 .send(updatedBlogData)
                 .expect(404)
         });
@@ -232,6 +234,7 @@ describe('when there is initially some blogs saved', () => {
 
             await api
                 .put(`/api/blogs/${id}`)
+                .set('Authorization', `Bearer ${token}`)
                 .send(updatedBlogData)
                 .expect(400);
         });
