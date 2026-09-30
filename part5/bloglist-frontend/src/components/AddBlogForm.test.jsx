@@ -2,12 +2,17 @@ import { render, screen } from "@testing-library/react";
 import { expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { AddBlogForm } from "./AddBlogForm";
+import { BrowserRouter } from "react-router-dom";
 
 test('clicking button for creating blog calls event handler', async () => {
     const addBlog = vi.fn();
     const user = userEvent.setup();
 
-    render(<AddBlogForm addBlog={addBlog} />);
+    render(
+        <BrowserRouter>
+            <AddBlogForm addBlog={addBlog} />
+        </BrowserRouter>
+    );
 
     const titleInput = screen.getByPlaceholderText('Enter title');
     const authorInput = screen.getByPlaceholderText('Enter author');

@@ -31,7 +31,7 @@ test('renders blog info and likes, but no buttons for unauthenticated user', () 
     expect(screen.queryByRole('button', { name: 'remove' })).toBeNull();
 });
 
-test('authenticated users who are not the blog’s creator are shown only the like button', () => {
+test('authenticated users who are not the blog\'s creator are shown only the like button', () => {
     const blog = {
         title: 'Test Blog title',
         url: 'http://test.com',
@@ -43,8 +43,8 @@ test('authenticated users who are not the blog’s creator are shown only the li
         }
     }
     const loggedUser = {
-        username: 'matej123',
-        name: 'Matej'
+        name: 'Matej',
+        username: 'matej123'
     }
 
     render(
@@ -56,3 +56,28 @@ test('authenticated users who are not the blog’s creator are shown only the li
     expect(screen.getByRole('button', { name: 'like' })).toBeDefined();
     expect(screen.queryByRole('button', { name: 'remove' })).toBeNull();
 });
+
+test('blog\'s creator is also shown the delete button', () => {
+    const blog = {
+        title: 'Test Blog title',
+        url: 'http://test.com',
+        author: 'Test Author',
+        likes: 5,
+        user: {
+            name: 'Test name',
+            username: 'testuser'
+        }
+    }
+    const loggedUser = {
+        name: 'Test name',
+        username: 'testuser'
+    }
+
+    render(
+        <BrowserRouter>
+            <Blog blog={blog} user={loggedUser} />
+        </BrowserRouter>
+    );
+
+    expect(screen.getByRole('button', { name: 'remove' })).toBeDefined();
+})
