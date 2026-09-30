@@ -7,6 +7,8 @@ import { Routes, Route, Link } from 'react-router-dom';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import { Blogs } from './components/BLogs';
+import { useMatch } from 'react-router-dom';
+import Blog from './components/Blog';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -107,6 +109,11 @@ const App = () => {
     padding: 5
   }
 
+  const match = useMatch('/blogs/:id');
+  const blog = match
+    ? blogs.find(b => b.id === match.params.id)
+    : null;
+
   return (
     <>
       {message && <Notification message={message} />}
@@ -120,15 +127,11 @@ const App = () => {
       }
       </div>
       <Routes>
+        <Route path='/' element={ <Blogs blogs={blogs} /> } />
         <Route
-          path='/'
+          path='/blogs/:id'
           element={
-            <Blogs
-              blogs={blogs}
-              likeBlog={likeBlog}
-              removeBlog={removeBlog}
-              user={user}
-            />
+            <Blog blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} user={user}/>
           }
         />
         <Route path='/login' element={<LoginForm handleLogin={handleLogin} />} />

@@ -1,22 +1,23 @@
+import { Link } from "react-router-dom";
 import Blog from "./Blog";
 
-export function Blogs({ blogs, likeBlog, removeBlog, user }) {
+export function Blogs({ blogs }) {
     return (
         <>
             <h1>blogs</h1>
-            {blogs
-                .slice()
-                .sort((curr, next) => next.likes - curr.likes)
-                .map(blog =>
-                    <Blog
-                        key={blog.id}
-                        blog={blog}
-                        likeBlog={likeBlog}
-                        removeBlog={removeBlog}
-                        user={user}
-                    />
-                )
-            }
+            <ul>
+                {blogs
+                    .slice()
+                    .sort((curr, next) => next.likes - curr.likes)
+                    .map(blog =>
+                        <li key={blog.id}>
+                            <Link to={`/blogs/${blog.id}`}>
+                                {blog.title} by {blog.author}
+                            </Link>
+                        </li>
+                    )
+                }
+            </ul>
         </>
     )
 }

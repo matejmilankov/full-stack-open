@@ -1,20 +1,9 @@
-import { useState } from 'react';
-
 const Blog = ({ blog, likeBlog, removeBlog, user }) => {
-  const [visible, setVisible] = useState(false);
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
+  if(!blog) return null;
 
   const blogUsername = blog.user?.username || blog.user;
   const isCreator = user && blogUsername === user.username;
-
-  const toggleVisibility = () => setVisible(!visible);
 
   // prilikom dodavanja novog korisnika
   // post endpoint vrati objekat sa polje user koji nije populate-ovan
@@ -33,25 +22,20 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
   }
 
   const handleRemove = async () => {
-    if(window.confirm(`Remove blog ${blog.title} by ${blog.author}`))
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`))
       await removeBlog(blog.id);
   }
 
   return (
-    <div className='blog' style={blogStyle}>
-      {blog.title} - {blog.author}
-      <button onClick={toggleVisibility}>{visible ? 'close' : 'view'}</button>
-      {visible && (
-        <div>
-          <p>{blog.url}</p>
-          <div>
-            likes {blog.likes}
-            <button onClick={handleLike}>like</button>
-          </div>
-          <p>{blog.user.name || 'Unkown user'}</p>
-          {isCreator && <button onClick={handleRemove}>remove</button>}
-        </div>
-      )}
+    <div>
+      <h1>{blog.title}</h1>
+      <a href={blog.url}>{blog.url}</a>
+      <div>
+        likes {blog.likes}
+        <button onClick={handleLike}>like</button>
+      </div>
+      <p>{blog.user?.name || 'Unkown user'}</p>
+      {isCreator && <button onClick={handleRemove}>remove</button>}
     </div>
   )
 }
