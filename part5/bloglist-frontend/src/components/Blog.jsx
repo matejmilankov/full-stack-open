@@ -33,7 +33,7 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
 
   return (
     <div>
-      <h1>{blog.title}</h1>
+      <h1>{blog.author} : {blog.title}</h1>
       <a href={blog.url}>{blog.url}</a>
       <div>
         likes {blog.likes}

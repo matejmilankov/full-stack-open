@@ -31,9 +31,12 @@ describe('Blog app', () => {
     });
 
     describe('login', () => {
+        beforeEach(async ({ page }) => {
+            await page.goto('/login');
+        });
         test('succeeds with correct credentials', async ({ page }) => {
             await loginWith(page, 'root', 'toor');
-            await expect(page.getByText('Superuser logged in')).toBeVisible();
+            await expect(page.getByRole('button', { name: 'logout' })).toBeVisible();
         });
 
         test('fails with wrong credentials', async ({ page }) => {
@@ -46,6 +49,7 @@ describe('Blog app', () => {
 
     describe('When logged in', () => {
         beforeEach(async ({ page }) => {
+            await page.goto('/login');
             await loginWith(page, 'root', 'toor');
         });
 
@@ -56,8 +60,8 @@ describe('Blog app', () => {
                 url: 'Test url'
             });
 
-            const blogDiv = page.locator('.blog');
-            await expect(blogDiv).toContainText('Test title');
+            const blogList = page.locator('ul');
+            await expect(blogList).toContainText('Test title');
         });
 
         describe('and a blog exists', () => {
@@ -69,34 +73,29 @@ describe('Blog app', () => {
                 });
             });
 
-            test('blog details can be viewed', async ({ page }) => {
-                const blogDiv = page.locator('.blog');
-                await blogDiv.getByRole('button', { name: 'view' }).click();
-
-                await expect(blogDiv).toContainText('Test author');
-                await expect(blogDiv).toContainText('Test url');
-            });
-
             test('blog can be liked', async ({ page }) => {
-                const blogDiv = page.locator('.blog');
-                await blogDiv.getByRole('button', { name: 'view' }).click();
-                await expect(blogDiv).toContainText('likes 0');
+                const blogList = page.locator('ul');
+                await blogList.getByRole('link', { name: 'Test title by Test author' }).click();
+                await expect(page.getByText('likes 0')).toBeVisible();
 
-                await blogDiv.getByRole('button', { name: 'like' }).click();
-                await expect(blogDiv).toContainText('likes 1');
+                await page.getByRole('button', { name: 'like' }).click();
+                await expect(page.getByText('likes 1')).toBeVisible();
             });
 
             test('blog can be deleted', async ({ page }) => {
-                const blogDiv = page.locator('.blog');
-                await blogDiv.getByRole('button', { name: 'view' }).click();
-
                 page.on('dialog', async dialog => {
                     expect(dialog.message()).toContain('Test title');
                     await dialog.accept();
                 });
-                await blogDiv.getByRole('button', { name: 'remove' }).click();
 
-                await expect(blogDiv).not.toBeVisible();
+                const blogList = page.locator('ul');
+                const blogLink = blogList.getByRole('link', { name: 'Test title by Test author' });
+
+                await blogLink.click();
+                await page.getByRole('button', { name: 'remove' }).click();
+
+                await page.waitForURL('/');
+                await expect(blogLink).not.toBeVisible();
             });
         });
 
@@ -120,25 +119,25 @@ describe('Blog app', () => {
             });
 
             test('existing blogs are sorted by likes', async ({ page }) => {
-                const blog1 = page.locator('.blog').filter({ hasText: 'Test title 1' });
-                const blog2 = page.locator('.blog').filter({ hasText: 'Test title 2' });
-                const blog3 = page.locator('.blog').filter({ hasText: 'Test title 3' });
-
-                await blog1.getByRole('button', { name: 'view' }).click();
-                await blog2.getByRole('button', { name: 'view' }).click();
-                await blog3.getByRole('button', { name: 'view' }).click();
+                const blog1 = page.locator('ul').filter({ hasText: 'Test title 1' });
+                const blog2 = page.locator('ul').filter({ hasText: 'Test title 2' });
 
                 // blog1 = 1 likes
-                await blog1.getByRole('button', { name: 'like' }).click();
-                await expect(blog1).toContainText('likes 1');
+                await blog1.getByRole('link', { name: 'Test title 1 by Test author 1' }).click();
+                await page.getByRole('button', { name: 'like' }).click();
+                await expect(page.getByText('likes 1')).toBeVisible();
+                await page.goto('/');
 
                 // blog2 = 2 likes
-                await blog2.getByRole('button', { name: 'like' }).click();
-                await expect(blog2).toContainText('likes 1');
-                await blog2.getByRole('button', { name: 'like' }).click();
-                await expect(blog2).toContainText('likes 2');
+                await blog2.getByRole('link', { name: 'Test title 2 by Test author 2' }).click();
+                await page.getByRole('button', { name: 'like' }).click();
+                await expect(page.getByText('likes 1')).toBeVisible();
+                await page.getByRole('button', { name: 'like' }).click();
+                await expect(page.getByText('likes 2')).toBeVisible();
+                await page.goto('/');
 
-                const sortedBlogs = await page.locator('.blog').all();
+                await expect(page.locator('li').first()).toBeVisible();
+                const sortedBlogs = await page.locator('li').all();
 
                 await expect(sortedBlogs[0]).toContainText('Test title 2');
                 await expect(sortedBlogs[1]).toContainText('Test title 1');
@@ -150,6 +149,7 @@ describe('Blog app', () => {
 
     describe('when logged in as another user', () => {
         beforeEach(async ({ page }) => {
+            await page.goto('/login');
             await loginWith(page, 'root', 'toor');
             await createBlog(page, {
                 title: 'Test title',
@@ -158,15 +158,16 @@ describe('Blog app', () => {
             });
 
             await page.getByRole('button', { name: 'logout' }).click();
+            await page.getByRole('link', { name: 'login' }).click();
             await loginWith(page, 'matejmilankov', '0811');
         });
 
         test('cannot see the remove button on other people\'s blogs', async ({ page }) => {
-            const blogDiv = page.locator('.blog').filter({ hasText: 'Test title' });
-            await blogDiv.getByRole('button', { name: 'view' }).click();
+            const blogList = page.locator('ul');
+            await blogList.getByRole('link', { name: 'Test title by Test author' }).click();
 
-            await expect(blogDiv).toContainText('Test author');
-            await expect(blogDiv.getByRole('button', { name: 'remove' })).not.toBeVisible();
+            await expect(page.getByText('Test author : Test title')).toBeVisible();
+            await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible();
         });
     })
 });
