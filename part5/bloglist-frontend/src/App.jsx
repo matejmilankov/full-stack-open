@@ -3,9 +3,10 @@ import { LoginForm } from './components/LoginForm';
 import { AddBlogForm } from './components/AddBlogForm';
 import { Notification } from './components/Notification';
 import { Togglable } from './components/Togglable';
-import Blog from './components/Blog';
+import { Routes, Route, Link } from 'react-router-dom';
 import blogService from './services/blogs';
 import loginService from './services/login';
+import { Blogs } from './components/BLogs';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -38,10 +39,14 @@ const App = () => {
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
+
+      return true;
     } catch (err) {
       const errorMessage = err.response?.data.error || 'Server side error happend. Please try again later';
       setMessage({ text: errorMessage, type: 'error' });
       setTimeout(() => setMessage(null), 3000);
+
+      return false;
     }
   }
 
@@ -98,44 +103,36 @@ const App = () => {
     }
   }
 
+  const padding = {
+    padding: 5
+  }
+
   return (
     <>
       {message && <Notification message={message} />}
-      {user === null ? (
-        <>
-          <h1>login to application</h1>
-          <LoginForm handleLogin={handleLogin} />
-        </>
-      ) : (
-        <div>
-          <h2>blogs</h2>
-          <div>
-            <button onClick={handleLogout}>logout</button>
-            <p>{user.name} logged in</p>
-          </div>
-
-          <Togglable buttonLabel="create blog" ref={blogFormRef}>
-            <div>
-              <h1>create new</h1>
-              <AddBlogForm addBlog={addBlog} />
-            </div>
-          </Togglable>
-
-          {blogs
-            .slice()
-            .sort((curr, next) => next.likes - curr.likes)
-            .map(blog =>
-              <Blog
-                key={blog.id}
-                blog={blog}
-                likeBlog={likeBlog}
-                removeBlog={removeBlog}
-                user={user}
-              />
-            )
+      <div>
+        <Link to="/" style={padding}>blogs</Link>
+        {user === null ? (
+          <Link to="/login" style={padding}>login</Link>
+        ) : (
+          <button onClick={handleLogout}>logout</button>
+        )
+      }
+      </div>
+      <Routes>
+        <Route
+          path='/'
+          element={
+            <Blogs
+              blogs={blogs}
+              likeBlog={likeBlog}
+              removeBlog={removeBlog}
+              user={user}
+            />
           }
-        </div>
-      )}
+        />
+        <Route path='/login' element={<LoginForm handleLogin={handleLogin} />} />
+      </Routes>
     </>
   )
 }

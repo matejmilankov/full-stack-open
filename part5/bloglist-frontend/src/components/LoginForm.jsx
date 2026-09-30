@@ -1,35 +1,43 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function LoginForm({ handleLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (event) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    handleLogin(username, password);
-    setUsername('');
-    setPassword('');
+    if (await handleLogin(username, password)) {
+      navigate('/');
+      setUsername('');
+      setPassword('');
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label style={{ display: 'block' }}>
-        username
-        <input
-          type="text"
-          value={username}
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </label>
-      <label>
-        password
-        <input
-          type="password"
-          value={password}
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </label>
-      <input style={{ display: 'block' }} type="submit" value="login" />
-    </form>
+    <>
+      <h1>Login to application</h1>
+      <form onSubmit={handleSubmit}>
+        <label style={{ display: 'block' }}>
+          username
+          <input
+            type="text"
+            value={username}
+            onChange={({ target }) => setUsername(target.value)}
+          />
+        </label>
+        <label>
+          password
+          <input
+            type="password"
+            value={password}
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </label>
+        <input style={{ display: 'block' }} type="submit" value="login" />
+      </form>
+    </>
   )
 }
