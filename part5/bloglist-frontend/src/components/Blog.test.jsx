@@ -1,76 +1,58 @@
 import { render, screen } from '@testing-library/react';
 import Blog from './Blog';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
+import { expect, vi } from 'vitest';
+import { BrowserRouter } from 'react-router-dom';
 
-test('check blog title and author', () => {
-    const blog = {
-        title: 'Test Blog title',
-        url: 'http://test.com',
-        author: 'Test Author',
-        likes: 5
-    }
-
-    render(<Blog blog={blog} />);
-
-    const title = screen.getByText('Test Blog title', { exact: false });
-    const author = screen.getByText('Test Author', { exact: false });
-    const url = screen.queryByText('http://test.com');
-    const likes = screen.queryByText('likes 5');
-
-    expect(title).toBeDefined();
-    expect(author).toBeDefined();
-
-    expect(url).toBeNull();
-    expect(likes).toBeNull();
-});
-
-test('url and likes are shown when button is clicked', async () => {
+test('renders blog info and likes, but no buttons for unauthenticated user', () => {
     const blog = {
         title: 'Test Blog title',
         url: 'http://test.com',
         author: 'Test Author',
         likes: 5,
         user: {
-            name: 'Test name'
+            name: 'Test name',
+            username: 'testuser'
         }
     }
 
-    render(<Blog blog={blog} />);
+    render(
+        <BrowserRouter>
+            <Blog blog={blog} user={null} />
+        </BrowserRouter>
+    );
 
-    const user = userEvent.setup();
-    const button = screen.getByText('view');
-    await user.click(button);
+    expect(screen.getByText('Test Blog title')).toBeDefined();
+    expect(screen.getByText('http://test.com')).toBeDefined();
+    expect(screen.getByText('likes 5')).toBeDefined();
+    expect(screen.getByText('Added by Test name')).toBeDefined();
 
-    const url = screen.getByText('http://test.com');
-    const likes = screen.getByText('likes 5');
-
-    expect(url).toBeDefined();
-    expect(likes).toBeDefined();
+    expect(screen.queryByRole('button', { name: 'like' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'remove' })).toBeNull();
 });
 
-test('clicking button likes calls event handler twice', async () => {
+test('authenticated users who are not the blog’s creator are shown only the like button', () => {
     const blog = {
         title: 'Test Blog title',
         url: 'http://test.com',
         author: 'Test Author',
         likes: 5,
         user: {
-            name: 'Test name'
+            name: 'Test name',
+            username: 'testuser'
         }
     }
+    const loggedUser = {
+        username: 'matej123',
+        name: 'Matej'
+    }
 
-    const likeBlog = vi.fn();
+    render(
+        <BrowserRouter>
+            <Blog blog={blog} user={loggedUser}/>
+        </BrowserRouter>
+    );
 
-    render(<Blog blog={blog} likeBlog={likeBlog} />);
-
-    const user = userEvent.setup();
-    const viewButton = screen.getByText('view');
-    await user.click(viewButton);
-
-    const likeButton = screen.getByText('like');
-    await user.click(likeButton);
-    await user.click(likeButton);
-
-    expect(likeBlog.mock.calls).toHaveLength(2);
+    expect(screen.getByRole('button', { name: 'like' })).toBeDefined();
+    expect(screen.queryByRole('button', { name: 'remove' })).toBeNull();
 });
