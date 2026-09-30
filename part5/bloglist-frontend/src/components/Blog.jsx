@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 const Blog = ({ blog, likeBlog, removeBlog, user }) => {
+  const navigate = useNavigate();
 
   if(!blog) return null;
 
@@ -22,8 +25,10 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
   }
 
   const handleRemove = async () => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`))
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await removeBlog(blog.id);
+      navigate('/');
+    }
   }
 
   return (
@@ -32,9 +37,9 @@ const Blog = ({ blog, likeBlog, removeBlog, user }) => {
       <a href={blog.url}>{blog.url}</a>
       <div>
         likes {blog.likes}
-        <button onClick={handleLike}>like</button>
+        {user && <button onClick={handleLike}>like</button>}
       </div>
-      <p>{blog.user?.name || 'Unkown user'}</p>
+      <p>Added by {blog.user?.name || 'Unkown user'}</p>
       {isCreator && <button onClick={handleRemove}>remove</button>}
     </div>
   )

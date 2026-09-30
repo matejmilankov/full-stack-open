@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { LoginForm } from './components/LoginForm';
 import { AddBlogForm } from './components/AddBlogForm';
 import { Notification } from './components/Notification';
-import { Togglable } from './components/Togglable';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import { Blogs } from './components/BLogs';
@@ -14,8 +13,6 @@ const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
-
-  const blogFormRef = useRef(null);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -69,7 +66,6 @@ const App = () => {
       setBlogs(prevBlogs => [...prevBlogs, blogWithUser]);
       setMessage({ text: `a new blog ${newBlog.title} by ${newBlog.author} added`, type: 'success' });
       setTimeout(() => setMessage(null), 3000);
-      blogFormRef.current.toggleVisibility();
 
       return true;
     } catch (err) {
@@ -122,19 +118,28 @@ const App = () => {
         {user === null ? (
           <Link to="/login" style={padding}>login</Link>
         ) : (
-          <button onClick={handleLogout}>logout</button>
+          <>
+            <Link to={"/create"} style={padding}>new blog</Link>
+            <button onClick={handleLogout}>logout</button>
+          </>
         )
-      }
+        }
       </div>
       <Routes>
-        <Route path='/' element={ <Blogs blogs={blogs} /> } />
+        <Route path='/' element={<Blogs blogs={blogs} />} />
         <Route
           path='/blogs/:id'
           element={
-            <Blog blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} user={user}/>
+            <Blog blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} user={user} />
           }
         />
         <Route path='/login' element={<LoginForm handleLogin={handleLogin} />} />
+        <Route path='/create' element={
+          user
+          ? <AddBlogForm addBlog={addBlog} />
+          : <Navigate replace to={'/login'} />
+        }
+        />
       </Routes>
     </>
   )
