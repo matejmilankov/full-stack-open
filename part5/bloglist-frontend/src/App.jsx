@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
+import { Blogs } from './components/BLogs';
 import { LoginForm } from './components/LoginForm';
 import { AddBlogForm } from './components/AddBlogForm';
 import { Notification } from './components/Notification';
-import { Routes, Route, Link, Navigate } from 'react-router-dom';
+import { Container } from '@mui/material';
+import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
-import { Blogs } from './components/BLogs';
-import { useMatch } from 'react-router-dom';
-import Blog from './components/Blog';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -111,7 +112,7 @@ const App = () => {
     : null;
 
   return (
-    <>
+    <Container>
       {message && <Notification message={message} />}
       <div>
         <Link to="/" style={padding}>blogs</Link>
@@ -141,7 +142,7 @@ const App = () => {
         }
         />
       </Routes>
-    </>
+    </Container>
   )
 }
 
