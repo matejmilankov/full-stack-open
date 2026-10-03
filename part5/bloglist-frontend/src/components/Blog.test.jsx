@@ -24,7 +24,7 @@ test('renders blog info and likes, but no buttons for unauthenticated user', () 
 
     expect(screen.getByText('Test Blog title')).toBeDefined();
     expect(screen.getByText('http://test.com')).toBeDefined();
-    expect(screen.getByText('likes 5')).toBeDefined();
+    expect(screen.getByText('5 likes')).toBeDefined();
     expect(screen.getByText('Added by Test name')).toBeDefined();
 
     expect(screen.queryByRole('button', { name: 'like' })).toBeNull();
@@ -80,4 +80,4 @@ test('blog\'s creator is also shown the delete button', () => {
     );
 
     expect(screen.getByRole('button', { name: 'remove' })).toBeDefined();
-})
+});

@@ -76,10 +76,10 @@ describe('Blog app', () => {
             test('blog can be liked', async ({ page }) => {
                 const blogList = page.locator('ul');
                 await blogList.getByRole('link', { name: 'Test title by Test author' }).click();
-                await expect(page.getByText('likes 0')).toBeVisible();
+                await expect(page.getByText('0 likes')).toBeVisible();
 
                 await page.getByRole('button', { name: 'like' }).click();
-                await expect(page.getByText('likes 1')).toBeVisible();
+                await expect(page.getByText('1 likes')).toBeVisible();
             });
 
             test('blog can be deleted', async ({ page }) => {
@@ -125,15 +125,15 @@ describe('Blog app', () => {
                 // blog1 = 1 likes
                 await blog1.getByRole('link', { name: 'Test title 1 by Test author 1' }).click();
                 await page.getByRole('button', { name: 'like' }).click();
-                await expect(page.getByText('likes 1')).toBeVisible();
+                await expect(page.getByText('1 likes')).toBeVisible();
                 await page.goto('/');
 
                 // blog2 = 2 likes
                 await blog2.getByRole('link', { name: 'Test title 2 by Test author 2' }).click();
                 await page.getByRole('button', { name: 'like' }).click();
-                await expect(page.getByText('likes 1')).toBeVisible();
+                await expect(page.getByText('1 likes')).toBeVisible();
                 await page.getByRole('button', { name: 'like' }).click();
-                await expect(page.getByText('likes 2')).toBeVisible();
+                await expect(page.getByText('2 likes')).toBeVisible();
                 await page.goto('/');
 
                 await expect(page.locator('li').first()).toBeVisible();

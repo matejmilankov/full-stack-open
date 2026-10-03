@@ -33,15 +33,6 @@ const App = () => {
     fetchBlogs();
   }, []);
 
-  useEffect(() => {
-    const userJSON = window.localStorage.getItem('loggedBlogUser');
-    if (userJSON) {
-      const userObj = JSON.parse(userJSON);
-      blogService.setToken(userObj.token);
-      setUser(userObj);
-    }
-  }, []);
-
   const handleLogin = async (username, password) => {
     try {
       const user = await loginService.login({ username, password });
