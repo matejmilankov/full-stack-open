@@ -1,3 +1,5 @@
+import { Alert } from "@mui/material"
+
 export function Notification({ message }) {
   const style = {
     color: message.type === 'error' ? 'red' : 'green',
@@ -10,8 +12,8 @@ export function Notification({ message }) {
   }
 
   return (
-    <div className={message.type === 'error' ? 'error' : 'success'} style={style}>
+    <Alert severity={message.type} sx={{ marginBlock: 2 }}>
       {message.text}
-    </div>
+    </Alert>
   )
 }

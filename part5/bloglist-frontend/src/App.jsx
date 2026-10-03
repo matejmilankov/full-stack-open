@@ -5,14 +5,23 @@ import { Blogs } from './components/BLogs';
 import { LoginForm } from './components/LoginForm';
 import { AddBlogForm } from './components/AddBlogForm';
 import { Notification } from './components/Notification';
-import { Container } from '@mui/material';
+import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const loggedUser = window.localStorage.getItem('loggedBlogUser');
+    if(loggedUser) {
+      const userObj = JSON.parse(loggedUser);
+      blogService.setToken(userObj.token);
+      return userObj;
+    }
+
+    return null;
+  });
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
@@ -27,9 +36,9 @@ const App = () => {
   useEffect(() => {
     const userJSON = window.localStorage.getItem('loggedBlogUser');
     if (userJSON) {
-      const user = JSON.parse(userJSON);
-      blogService.setToken(user.token);
-      setUser(user);
+      const userObj = JSON.parse(userJSON);
+      blogService.setToken(userObj.token);
+      setUser(userObj);
     }
   }, []);
 
@@ -102,10 +111,6 @@ const App = () => {
     }
   }
 
-  const padding = {
-    padding: 5
-  }
-
   const match = useMatch('/blogs/:id');
   const blog = match
     ? blogs.find(b => b.id === match.params.id)
@@ -113,19 +118,32 @@ const App = () => {
 
   return (
     <Container>
+      <AppBar position='static'>
+        <Toolbar>
+          <Typography variant='h5' component='div' sx={{ flexGrow: 1 }}>
+            Blog App
+          </Typography>
+          <Button color='inherit' component={Link} to='/'>
+            blogs
+          </Button>
+          {user === null ? (
+            <Button color='inherit' component={Link} to='/login'>
+              login
+            </Button>
+          ) : (
+            <>
+              <Button color='inherit' component={Link} to='/create'>
+                new blog
+              </Button>
+              <Button color='inherit' onClick={handleLogout}>logout</Button>
+            </>
+          )
+          }
+        </Toolbar>
+      </AppBar>
+
       {message && <Notification message={message} />}
-      <div>
-        <Link to="/" style={padding}>blogs</Link>
-        {user === null ? (
-          <Link to="/login" style={padding}>login</Link>
-        ) : (
-          <>
-            <Link to={"/create"} style={padding}>new blog</Link>
-            <button onClick={handleLogout}>logout</button>
-          </>
-        )
-        }
-      </div>
+
       <Routes>
         <Route path='/' element={<Blogs blogs={blogs} />} />
         <Route
@@ -137,8 +155,8 @@ const App = () => {
         <Route path='/login' element={<LoginForm handleLogin={handleLogin} />} />
         <Route path='/create' element={
           user
-          ? <AddBlogForm addBlog={addBlog} />
-          : <Navigate replace to={'/login'} />
+            ? <AddBlogForm addBlog={addBlog} />
+            : <Navigate replace to={'/login'} />
         }
         />
       </Routes>

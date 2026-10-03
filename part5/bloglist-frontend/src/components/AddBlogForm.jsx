@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { TextField, Button, Stack } from '@mui/material';
 
 export function AddBlogForm({ addBlog }) {
   const [title, setTitle] = useState('');
@@ -23,34 +24,38 @@ export function AddBlogForm({ addBlog }) {
     <>
       <h1>create new</h1>
       <form onSubmit={handleSubmit}>
-        <label style={{ display: 'block' }}>
-          title
-          <input
+        <Stack direction='column' spacing={2} sx={{ alignItems: 'flex-start' }}>
+          <TextField
+            label='title'
+            size='small'
             type="text"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
             placeholder='Enter title'
           />
-        </label>
-        <label style={{ display: 'block' }}>
-          author
-          <input
+
+          <TextField
+            label='author'
+            size='small'
             type="text"
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
             placeholder='Enter author'
           />
-        </label>
-        <label>
-          url
-          <input
+
+          <TextField
+            label='url'
+            size='small'
             type="text"
             value={url}
             onChange={({ target }) => setUrl(target.value)}
             placeholder='Enter url'
           />
-        </label>
-        <input style={{ display: 'block' }} type="submit" value="create" />
+
+          <Button sx={{ display: 'block' }} type="submit" variant='contained'>
+            create
+          </Button>
+        </Stack>
       </form>
     </>
   )
