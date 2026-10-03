@@ -81,3 +81,34 @@ test('blog\'s creator is also shown the delete button', () => {
 
     expect(screen.getByRole('button', { name: 'remove' })).toBeDefined();
 });
+
+test('clicking the like button calls the handler function', async () => {
+    const blog = {
+        title: 'Test Blog title',
+        url: 'http://test.com',
+        author: 'Test Author',
+        likes: 5,
+        user: {
+            name: 'Test name',
+            username: 'testuser'
+        }
+    }
+    const loggedUser = {
+        name: 'Test name',
+        username: 'testuser'
+    }
+
+    const likeBlog = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+        <BrowserRouter>
+            <Blog blog={blog} likeBlog={likeBlog} user={loggedUser} />
+        </BrowserRouter>
+    );
+
+    await user.click(screen.getByRole('button', { name: 'like' }));
+    await user.click(screen.getByRole('button', { name: 'like' }));
+
+    expect(likeBlog.mock.calls).toHaveLength(2);
+});
