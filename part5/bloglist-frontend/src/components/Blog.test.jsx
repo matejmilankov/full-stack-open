@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import Blog from './Blog';
 import userEvent from '@testing-library/user-event';
 import { expect, vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
+import Blog from './Blog';
 
 test('renders blog info and likes, but no buttons for unauthenticated user', () => {
     const blog = {
@@ -53,8 +53,8 @@ test('authenticated users who are not the blog\'s creator are shown only the lik
         </BrowserRouter>
     );
 
-    expect(screen.getByRole('button', { name: 'like' })).toBeDefined();
-    expect(screen.queryByRole('button', { name: 'remove' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'like' })).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'remove' })).not.toBeInTheDocument();
 });
 
 test('blog\'s creator is also shown the delete button', () => {
@@ -79,7 +79,7 @@ test('blog\'s creator is also shown the delete button', () => {
         </BrowserRouter>
     );
 
-    expect(screen.getByRole('button', { name: 'remove' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'remove' })).toBeVisible();
 });
 
 test('clicking the like button calls the handler function', async () => {
